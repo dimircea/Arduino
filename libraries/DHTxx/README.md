@@ -1,7 +1,7 @@
 ### DHTxx Library
 Allows to use DHTxx (XX= {11, 21, 22}) humidity and temperature sensor with almost any Arduino board.
 
-## Required resources
+### Required resources
 The library has a flash footprint of about 2.1Kb and a RAM footprint of 15B, for one single instance (which is probably what you'll use most of the time).
 
 ### How to use
