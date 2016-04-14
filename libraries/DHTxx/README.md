@@ -10,7 +10,7 @@ Allows to use DHTxx (xx = {11, 21, 22}) humidity and temperature sensor with 'al
  * [Download DHT21 Datasheet as PDF](https://github.com/dimircea/Arduino/blob/master/libraries/DHTxx/docs/DHT21.pdf)
  * [Download DHT22 Datasheet as PDF](https://github.com/dimircea/Arduino/blob/master/libraries/DHTxx/docs/DHT22.pdf)
 
-### Required resources
+### Required Arduino resources
 The library has a flash footprint of about 2.1Kb and a RAM footprint of 15B, for one single instance. One instance is used for one  sensor, no matter if it is DHT11, DHT21 or DHT22.
 
 ### How to use
