@@ -1,11 +1,11 @@
-/*#include "DHTxx.h"
+#include "DHTxx.h"
 #define DHT_PIN 7
 
-Dht dht(DHT_PIN, Dht::TypeEL::DHT11);*/
+Dht dht(DHT_PIN, Dht::TypeEL::DHT11);
 
 void setup() {
-  // Start serial communication.
-  // This is only used to show sensor data in the serial monitor.
+  // Start serial communication, used to show
+  // sensor data in the Arduino serial monitor.
   Serial.begin(115200);
   // Wait for the DHT sensor to settle.
   // This may take a few seconds...
@@ -13,10 +13,10 @@ void setup() {
 };
 
 void loop() {
- // Dht::Result result = dht.read();
- /* 
-  // Write values via serial port, so one can use
-  // "Tools > Serial Monitor" to view the data.
+  // read data from the DHT sensor
+  Dht::Result result = dht.read();
+  // display data via the serial port. 
+  // Use "Tools > Serial Monitor" to view the data.
   if (result.status == Dht::StatusEL::OK) {
     Serial.print("Temperature: ");
     Serial.println(result.temperature);
@@ -26,6 +26,7 @@ void loop() {
     Serial.println("CRC error! ");
   } else {
     Serial.println("Timeout error! ");
-  }*/
+  }
+  // wait 5 seconds until the next reading
   delay(5000);
 };
