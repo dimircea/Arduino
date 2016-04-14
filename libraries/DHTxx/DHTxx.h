@@ -49,13 +49,13 @@ class Dht {
     // Define data structure which is used to denote 
     // a reading from the sensor.  
     struct Result {
-      // DHT11: temperature value is [0, 50]�C, accurracy is �2�C
-      // DHT21: temperature value is [-40, 80]�C, accurracy is �0.5�C
-      // DHT22: temperature value is [-40, 125]�C, accurracy is �0.2�C
+      // DHT11: temperature value is [0, 50]°C, accurracy is ±2°C
+      // DHT21: temperature value is [-40, 80]°C, accurracy is ±0.5°C
+      // DHT22: temperature value is [-40, 125]°C, accurracy is ±0.2°C
       float temperature = 0.0;
-      // DHT11: humidity value is [20, 80]%, accurracy �5%
-      // DHT21: humidity value is [0, 100]%, accurracy �3%
-      // DHT22: humidity value is [0, 100]%, accurracy �2%
+      // DHT11: humidity value is [20, 80]%, accurracy ±5%
+      // DHT21: humidity value is [0, 100]%, accurracy ±3%
+      // DHT22: humidity value is [0, 100]%, accurracy ±2%
       float humidity = 0.0;
       // Sensor status
       StatusEL status = StatusEL::NONE;
