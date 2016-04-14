@@ -1,9 +1,9 @@
 #include "DHTxx.h"
 #define DHT_PIN 7
 
-Dht dht(DHT_PIN, Dht::TypeEL::DHT11);
+Dht dht(DHT_PIN, Dht::TypeEL::DHT22);
 
-void setup() {
+void setup() {  
   // Start serial communication, used to show
   // sensor data in the Arduino serial monitor.
   Serial.begin(115200);
