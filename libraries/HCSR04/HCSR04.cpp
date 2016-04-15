@@ -29,7 +29,7 @@ HCSR04::HCSR04(unsigned char triggerPin, unsigned char echoPin) {
  *         or -1 if error occured
  */
 float HCSR04::read(HCSR04::MetricsEL unit) {
-  unsigned long d = 0;
+  float d = 0;
   // The sensor requires a 10uS HIGH pulse 
   // to aknoledge that we want a reading.
   // We use 20uS, just in case
@@ -41,7 +41,7 @@ float HCSR04::read(HCSR04::MetricsEL unit) {
   // to travel forth and back from the obstacle.
   d = pulseIn(this->echoPin, HIGH);
   // do the math and compute the distance in cm
-  d = d / 58.2;
+  d = d / 58.2; // distance (in cm) = (pulseTime / 2) / 29.1
   // transform in the required measurement unit
   if (unit == MetricsEL::mm) {
     return d * 10;

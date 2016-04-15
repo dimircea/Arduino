@@ -17,10 +17,7 @@ class HCSR04 {
       km = 3
     };
     HCSR04(unsigned char triggerPin, unsigned char echoPin); 
-    float read(HCSR04::MetricsEL unit);
-    inline float read() {
-      return read(HCSR04::MetricsEL::cm);
-    };
+    float read(MetricsEL unit = MetricsEL::cm);
   private:
     unsigned char triggerPin;
     unsigned char echoPin;
