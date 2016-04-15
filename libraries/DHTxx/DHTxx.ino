@@ -1,7 +1,11 @@
 #include "DHTxx.h"
 #define DHT_PIN 7
 
-Dht dht(DHT_PIN, Dht::TypeEL::DHT22);
+Dht dht(DHT_PIN, Dht::TypeEL::DHT11);
+// OR
+// Dht dht(DHT_PIN, Dht::TypeEL::DHT21);
+// OR
+// Dht dht(DHT_PIN, Dht::TypeEL::DHT22);
 
 void setup() {  
   // Start serial communication, used to show
