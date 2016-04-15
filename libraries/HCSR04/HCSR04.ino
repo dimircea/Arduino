@@ -14,7 +14,7 @@ void setup() {
 }
 
 void loop() {
-  float distance = hcsr04.read(HCSR04::MetricsEL::mm);  
+  float distance = hcsr04.read();  
   if (distance > 0) {
     Serial.println(distance);
   } else {
