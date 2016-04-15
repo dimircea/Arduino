@@ -1,7 +1,16 @@
 ### DHTxx Library
 Allows to use DHTxx (xx = {11, 21, 22}) humidity and temperature sensor with 'almost' any Arduino board.
 
-### Required resources
+### Sensors Shapes and Pins Configuration
+![DHT11 Sensor](https://github.com/dimircea/Arduino/blob/master/libraries/DHTxx/docs/media/DHT11.png?raw=true "DHT11 Sensor")
+![DHT22 Sensor](https://github.com/dimircea/Arduino/blob/master/libraries/DHTxx/docs/media/DHT22.png?raw=true "DHT22 Sensor")
+
+### Sensors Datasheet
+ * [Download DHT11 Datasheet as PDF](https://github.com/dimircea/Arduino/blob/master/libraries/DHTxx/docs/DHT11.pdf)
+ * [Download DHT21 Datasheet as PDF](https://github.com/dimircea/Arduino/blob/master/libraries/DHTxx/docs/DHT21.pdf)
+ * [Download DHT22 Datasheet as PDF](https://github.com/dimircea/Arduino/blob/master/libraries/DHTxx/docs/DHT22.pdf)
+
+### Required Arduino resources
 The library has a flash footprint of about 2.1Kb and a RAM footprint of 15B, for one single instance. One instance is used for one  sensor, no matter if it is DHT11, DHT21 or DHT22.
 
 ### How to use
