@@ -3,7 +3,7 @@
 
 #if ARDUINO < 100
 #include <WProgram.h>
-#include <pins_arduino.h>  // fix for broken pre 1.0 version - TODO TEST
+#include <pins_arduino.h>
 #else
 #include <Arduino.h>
 #endif
