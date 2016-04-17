@@ -6,22 +6,24 @@ void setup() {
 }
 
 void loop() {
-  double voltage = 0, resistance = 0, 
-       inputVoltage = 5, resistance2 = 10000,
-       luxValue = 0;
+  double vAcrossR2 = 0, r1 = 0, luxValue = 0,
+         vInput = 5, r2 = 10000;
+  
   // collect 10 samples and average to obtain stable value.
   for ( byte i = 0; i < 10; i++) {
     // read voltage from pin, in Volts
-    voltage += analogRead(VT93N1_PIN) * 0.00488;
+    vAcrossR2 += analogRead(VT93N1_PIN) * 0.00488;
   }
-  voltage = voltage / 10.0;
-  // calculate resistance R = R2 x (Vin / Vread - 1)
-  resistance = resistance2 * ( inputVoltage / voltage - 1);
+  vAcrossR2 = vAcrossR2 / 10.0;
+
+  // calculate resistance r1 = 22 * (vInput / vAcrossR1 - 1)
+  r1 = r2 * ( vInput / vAcrossR2 - 1);
+
   // convert resistance value to LUX value for this sensor based in formula:
   // E = 341.64 / R^(10 / 9), where R is measured in kOhm
-  luxValue = 341.64 / pow( resistance / 1000.0, 10.0 / 9.0);
+  luxValue = 341.64 / pow( r1 / 1000.0, 10.0 / 9.0);
 
-  Serial.println("LUX: ");
+  Serial.print("LUX: ");
   Serial.println(luxValue);
 
   delay(5000);
