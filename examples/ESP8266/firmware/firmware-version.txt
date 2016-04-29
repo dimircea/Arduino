@@ -1,0 +1,3 @@
+The esp folder contains the binaries for:
+1) SDK v1.5.3 (18.04.2016) 
+2) AT v1.0.0 (18.04.2016)
