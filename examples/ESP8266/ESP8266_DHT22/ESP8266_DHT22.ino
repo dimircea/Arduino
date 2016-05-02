@@ -10,18 +10,16 @@ const char* WIFI_SSID = "wotap";
 const char* WIFI_PASSWORD = "g3ma4ode";
 
 // data server address and port
-const char* DATA_SERVER_ADDRESS = "141.43.15.13"; // ""api.thingspeak.com"
+const char* DATA_SERVER_ADDRESS = "api.thingspeak.com"
 const uint8_t DATA_SERVER_PORT = 80;
 
 // data to be sent to the server
 const char* DATA_SERVER_API_KEY = "4V3YD3FGLW5DR9MH";
-char* DATA_SERVER_PATH = "/api.thingspeak.com/update";
+char* DATA_SERVER_PATH = "/update";
 const char DATA_TEMPLATE[] PROGMEM = "?api_key=%s&field1=%s&field2=%s";
 
 boolean checkWiFi() {
-  if( esp.at() == ESP8266::Error::NONE) {
-    return true;
-  } 
+  if( esp.at() == ESP8266::Error::NONE) return true; 
   return false;
 };
 
