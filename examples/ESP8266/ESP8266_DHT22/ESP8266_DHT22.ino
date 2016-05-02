@@ -6,15 +6,15 @@ Dht dht(DHT_PIN, Dht::TypeEL::DHT22);
 ESP8266 esp(Serial);
 
 // WiFi authentication data
-const char* WIFI_SSID = "wotap";
-const char* WIFI_PASSWORD = "g3ma4ode";
+const char* WIFI_SSID = "your-wifi-ssid";
+const char* WIFI_PASSWORD = "your-wifi-password";
 
 // data server address and port
 const char* DATA_SERVER_ADDRESS = "api.thingspeak.com"
 const uint8_t DATA_SERVER_PORT = 80;
 
 // data to be sent to the server
-const char* DATA_SERVER_API_KEY = "4V3YD3FGLW5DR9MH";
+const char* DATA_SERVER_API_KEY = "your-thingspeak-write-api-key";
 char* DATA_SERVER_PATH = "/update";
 const char DATA_TEMPLATE[] PROGMEM = "?api_key=%s&field1=%s&field2=%s";
 
