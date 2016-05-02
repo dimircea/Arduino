@@ -1,0 +1,164 @@
+<p>In this multi-part tutorial we show how to develop Arduino-based apps for the Web of Things (WoT). This third part shows how to connect your Arduino to an WiFi network and use HTTP(S) to send data to a free cloud service, <a href="https://thingspeak.com">https://thingspeak.com</a>. In the following parts of this tutorial, which will appear every 1-3 weeks, we discuss how to control actuators and connect them all together in a Web of Things (WoT) network. Using standard Web technologies, such as HTTP and Web Sockets, we can then access the data or provide commands to the WoT nodes. As a newbie, it is helpful if you already have some basic C/C++ programming knowledge and understanding of some Web standards and programming languages, such as HTML and JavaScript.</p>
+
+<p>Check the other parts of this tutorial series:</p>
+
+<ul>
+	<li><a href="http://web-engineering.info/node/60">Part 1: Mastering the RGB LED</a></li>
+	<li><a href="http://web-engineering.info/node/61">Part 2: Connecting to the Real World via Sensors</a></li>
+</ul>
+
+<p>This tutorial is part of our <a href="http://web-engineering.info/WoTProjects">learning materials</a> on the Web of Things published on <a href="http://web-engineering.info/">web-engineeering.info</a>.</p>
+
+<p><strong>Disclaimer:</strong> working with electricity is dangerous. For this project we'll use 5V, which is safe for the human body under any environment conditions. However, the low voltage may be obtained from a mains connected power brick, and therefore we highly recommend you to take safety precautions and to use a trustful brand for the power supply. We cannot be held responsible for any caused damage! Do it at your own risk and/or ask help from an electronics engineer. In case you are using the USB connector from your PC to power the Arduino board, be aware that short-circuits which may occur on the Arduino board may also have a negative impact on your PC!</p>
+
+<p><strong>Credits:</strong> some of the images from this tutorial are created by using <a href="http://fritzing.org/home/">Fritzing</a>, a nice electronics modeling tool for beginners.</p>
+
+<h4><strong><a href="http://web-engineering.info/sites/default/files/wot_tutorials/network/WoT-Tutorial-Part3.zip">Download Source Code</a></strong></h4>
+
+<h2>ESP8266 + Arduino = "I am Online Mum!"</h2>
+
+<p>After we've learned how to read data from environment, by using sensors, it will be nice to be able to store them for later analyze of for statistical reasons. It will also be nice to be able to observe the sensor readings when we are not around, such as by accessing a web site that provides an overview of the current and earlier states.</p>
+
+<p>Currently is possible to connect Arduino to a network, and thus to internet too, by using various networking modules, such as the ones shown in <a href="#fig">Figure 1</a>. We can see that wired and WiFi solutions are available, thus appropriate for almost any kind of network one may have available. Other solutions are also available, such as for example by using send/receive RF modules, which transmit/receive data by making use of the 315MHz-2.4GHz frequency range. However, such modules does not use the standard WiFi protocols, therefore you can't just directly connect your Arduino to Internet, by simply using your WiFi router or repeater.</p>
+
+<p>A simple solution for having an Arduino connected to a WiFi network, thus to Internet if available, is to use an ESP8266 module. These modules are now widely available, with prices in the range 2-8 EUR, including postage to EU. Such module is what we are going to use in this tutorial, and we intend to provide you with a guide on how to chose one, since multiple variants are available, how to update its firmware, since new versions are available almost every month, and how to use it to transmit and receive data by using standard Web technologies, such as HTTP(s).</p>
+
+<h3>Choosing an ESP8266 Module Version</h3>
+
+<p>Multiple versions of the ESP8266 WiFi module are available, we are aware about 12 of them, as shown in <a href="#fig2">Figure 2</a>.</p>
+
+<figure id="fig2"><img alt="Variants of the ESP8266 WiFi Module" src="http://web-engineering.info/sites/default/files/wot_tutorials/networking/esp8266-variants.png" />
+<figcaption>Figure 2: DHTxx Variants of the ESP8266 WiFi Module.</figcaption>
+</figure>
+
+<p>It is important to note that these modules uses the 802.11b/g/n standard operating at 2.4 GHz. This means, we can connect to a standard WiFi network, such as the one most of us have at home, provided by an WiFi router or access point (AP).</p>
+
+<p>Having multiple choices, comes the question "which one should I use ?". There is no perfect answer to this question, and it highly depends on what you are using the WiFi module for. You should know that these modules are not only a "blind" WiFi communication module, but are based on a MCU, can be programmed by their own and have I/O pins that can do tasks which an Arduino board does. Even more, the Arduino IDE supports ESP8266 programming, but details about this topic we'll discus in another tutorial. Regarding our question, there are three main reasons to consider when choosing an ESP8266 module:</p>
+
+<ul>
+	<li><strong>usability on a breadboard:</strong> most of the times we prototype on a breadboard, therefore we should be able to connect these modules to such a board. Some of the modules, such as ESP02, ESP03 and ESP05 (see <a href="#fig2">Figure 2</a>) are breadboard friendly, having a pitch of 2.54mm (the distance between two pins). Other modules, such as ESP07 or ESP08 have a pitch of 1.27mm, thus you'll only be able to use them with a breadboard when using an adapter. Last, other modules, such as ESP01 have a pitch of 2.54mm, but they have a two-row header, which makes it impossible to be used with a breadboard, because the pins will be short-circuited. Notice that some of the breadboard friendly modules have only a half-way connection, this meaning that they have only half-holes for pin connection, which makes it harder to solder. Tip: plug the pin headers into a breadboard, alling the module on top of them, then solder.</li>
+	<li><strong>flash memory size:</strong> this is a really important point when choosing an ESP8266 module, because they come with permanent flash memory, which is usually in the range of 4MBit (512KB) up to 16MBit (2MB), but can go up to 128MBit (16MB). <em><strong>Starting with the firmware version 1.1.0 (released on June 2015), you'll need a module with at least 8MBit (1MB) flash size to burn the new firmware</strong></em>. Thus, pay attention when buy the module and be sure that you get one that has at least 8Mbit (1MB) flash size. In term of RAM and MCU frequency, they are mostly the same, so no need to worry about it. There are ways to improve the flash capacity, but for this you'll need good soldering skills to remove the old flash IC and solder the new one, and usually the price of the flash IC bought in small quantities is more than half of the ESP8266 module price, thus defeating the purpose. Excepting for the ESP06, ESP07, ESP08 and ESP12 modules, which have a metallic (hard to remove) cover over the CPU and flash IC, you can simply detect the flash size by reading the text on the 8 pin black IC soldered near the MCU (which is the square black IC with pins on all four sides). If the number on the flash IC starts with 25Q80 then you have a 8MBit sized one, while if it starts with 25Q40 then you have a 4MBit sized one.</li>
+	<li><strong>MCU features:</strong> these modules are driven by a low power 32-bit RISC CPU (Tensilica Xtensa LX106) running at 80 MHz. It has 64 KiB of instruction RAM, 96 KiB of data RAM and supports external QSPI flash - 512 KB to 4 MB (up to 16MB is supported). I has 16 I/O pins, from which one has 10Bit ADC capabilities, and supports I2C, I2S, SPI and UART communication protocols. All these features are quite important if you are using the ESP8266 module as standalone controller board. However, if the ESP8266 module is used as WiFi interface only, then you'll not need these features, and you can chose the cheapest and board with suits your needs.</li>
+</ul>
+
+<p>Based on the above considerations, we chose to use ESP02 module, because it is small, breadboard friendly (even if is not very easy to solder the pin header) and it has a connector for a 2.4GHz WiFi antenna, thus allowing for a good WiFi range, even when used indoors.</p>
+
+<h3>Update the ESP8266 Firmware</h3>
+
+<p><strong>Note:</strong> perform the tasks shown on this section on your own risk. If something goes wrong, it may be possible to have a "bricked" module, which can't be used anymore or requires special tools to repair.</p>
+
+<p>Normally, after buying an ESP8266 module, the first task is to ensure that it has the latest firmware, this being able to use the latest features and having fixed various software related problems. But how do we know if the last firmware is burned into our ESP8266 module? To answer this question we need to connect the module to a computer by using a TTL module and a software, which allows us to communicate with the module and perform queries or provide commands. A TTL module (e.g. see <a href="#fig3">Figure 3</a>), see is a communication device that connects to an USB port of the computer and allows to map Serial protocol via the USB port. Its TX and RX pins connects to the RX and respective TX pins of the ESP8266 module (pay attention, the pins connection is twisted!). Such modules are quite cheap, having an approximate cost of about 2-3 EUR postage included in EU.</p>
+
+<figure id="fig3"><img alt="USB-TTL UART Module" src="http://web-engineering.info/sites/default/files/wot_tutorials/networking/usb-ttl-module.png" />
+<figcaption>Figure 3: USB-TTL UART Module.</figcaption>
+</figure>
+
+<p>In <a href="#fig4">Figure 4</a> and <a href="#fig5">Figure 5</a> are shown the breadboard connection and the schematics of the circuit which allows us to have the ESP02 module communicating with a computer by using the serial port (UART communcation). A breadboard friendly power supply is used to provide the required 3.3V for the ESP8266 module. This specific one allows inputs in the range 5-12V and produce a steady 3.3V or 5V (a switch allows the selection) output, with a maximum current of 0.7A.</p>
+
+<p>In addition, we need a software which allows us to have a user interface so we can send commands (or queries) to the module and see the module answer. While there are multiple software available for this purpose, we found <a href="http://realterm.sourceforge.net/">Realterm</a> as being very stable, free of charge and easy to use. Further in this tutorial we refer to Realterm when providing examples or screen shots related to this topic, but you are free to use others if you like, such as for example <a href="http://www.putty.org/"> Putty</a>.</p>
+
+<figure id="fig4"><img alt="ESP8266 PC USB Connection via TTL Module on a Breadboard" src="http://web-engineering.info/sites/default/files/wot_tutorials/networking/usb-ttl-esp8266-breadboard.png" />
+<figcaption>Figure 4: ESP8266 PC USB Connection via TTL Module on a Breadboard.</figcaption>
+</figure>
+
+<figure id="fig5"><img alt="Schematics of ESP8266 PC USB Connection via TTL Module" src="http://web-engineering.info/sites/default/files/wot_tutorials/networking/usb-ttl-esp8266-schematics.png" />
+<figcaption>Figure 5: Schematics of ESP8266 PC USB Connection via TTL Module.</figcaption>
+</figure>
+
+<p>It may be observed that two of the ESP8266 module pins are connected to VCC (3.3V) via 3.3kΩ resistors. This is required, because the RST (reset) and CH_PD (power down) pins must stay high during the normal operation of this module. One can use Arduino I/O pins to control the state of these pins, thus having reset and power down features for a project that implies to use the ESP8266 module, and allowing for lower energy consumption when WiFi transmission is not required. The ESP8266 module is able to recover very fast from a "power down" state, the wake-up time being in the order of milliseconds. However, after resetting the module, may take up to two seconds to have the module booted and a few other seconds until WiFi line is ready to be used.</p>
+
+<p><strong>Important:</strong> the connection between the GPIO0 of the ESP8266 module and GND (see the blue wire in <a href="#fig4">Figure 4</a>) is required when the firmware needs to be updated. In all the other case, you should remove this connection, otherwise your module will not communicate via the UART port (RX/TX lines). Removing or connecting GPIO0 pin to GND should be done ONLY when the module receives no power, so first turn OFF the power supply connected to module, then connect or disconnect the wire (or jumper) between the GPIO0 to GND.</p>
+
+<p>The USB-TTL module we use has a 3.3V UART interface, therefore is no need to have an additional voltage LC (level converter) module. Before doing the connections, check if your module has already this feature, by measuring (using a voltmeter) the voltage between the GND and TX pins of the USB-TTL module. If you read a voltage in less that 3.5V, then it is safe to connect the RX and TX pins of the USB-TTL module directly to the ESP8266 TX and RX pins. If you read more than 3.5V then you need to use a LC module to convert the 5V to 3.3V and back between the RX and TX lines of the ESP8266 module and the USB-TTL module. Ignoring this may very likely result in destroying your ESP8266 module, so do it at your own risk!</p>
+
+<p><strong>Note:</strong> it is strongly recommended to use a stable 3.3V power supply that is to provide current in excess of 700mA (0.7A). The ESP8266 module is in general power efficient, but during the data transmission, it may have peaks of up to 700mA. Powering it from the 3.3V rail of the Aruino board or from the 3.3V rail available for some USB-TTL module is NOT recommended and will very likely result in destroying the 3.3V voltage regulator of your Arduino board or of the USB-TTL board. Notice that w e use a breadboard friendly power supply able to produce 3.3V and 5V (a switch allow the selection) up to 700mA (see <a href="#fig4">Figure 4</a>). This specific power supply cab be found very cheap, having prices of about 1-3 EUR postage in EU included.</p>
+
+<p>After you have downloaded and installed <a href="http://realterm.sourceforge.net/">Realterm</a>, start it and select the baud rate (normally this defaults to 115200 for most of the ESP8266 modules we'Ve bought over the last 6 months) and the COM port (which in our case is 38, but may be different for you, so better check). Last, push the "Open" button, to create a Serial (UART) connection. If the "Open" button was already pushed, then push it again to its OFF state it and push it back to its ON state. Also, check <a href="#fig6">Figure 6</a> for additional details.</p>
+
+<p><strong>Note:</strong> Realterm is highly configurable via command line parameters. Check the <a href="http://realterm.sourceforge.net/index.html#Command_Line_Parameters">command line configuration parameters</a> documentation for making your settings permanent (e.g., to have the program started with the COM port and baud-rate already set to whatever you like) or for having various other configurations.</p>
+
+<figure id="fig6"><img alt="Realterm Port and Baud-rate configuation" src="http://web-engineering.info/sites/default/files/wot_tutorials/networking/esp8266-FU-connect.png" />
+<figcaption>Figure 5: Realterm Port and Baud-rate configuation.</figcaption>
+</figure>
+
+<p>At this moment we are ready to communicate with the ESP8266 module. First operation we like to perform is a reset, so we are able to see that the module reacts to our commands. For this, go to "Send" tab in Realterm UI and write "AT+RST" on the first text input box. Please check the "+CR" and "+LF" boxes located on the right of the first text input box, thus allowing to send a CR and LF chars at the end of the command, this being required for the module to recognize as the end of a command. You should see a result similar with the one shown in <a href="#fig7">Figure 7</a>, but some of the response text may differ in your case because of different firmware versions.</p>
+
+<figure id="fig7"><img alt="Sending Reset Command to ESP8266 Module" src="http://web-engineering.info/sites/default/files/wot_tutorials/networking/esp8266-AT+RST-before.png" />
+<figcaption>Figure 7: Sending Reset Command to ESP8266 Module.</figcaption>
+</figure>
+
+<p>Our initial purpose was to check if we have (or not) the latest firmware burned int our ESP8266 module. For this, following the same procedure as for "AT+RST" command, we send the "AT+GMR" command. Tee result we obtain is shown in <a href="#fig8">Figure 8</a> but you may have a different one, because of a different firmware version burned into your module.</p>
+
+<figure id="fig8"><img alt="Sending 'Get Version' Command to ESP8266 Module" src="http://web-engineering.info/sites/default/files/wot_tutorials/networking/esp8266-AT+GMR-before.png" />
+<figcaption>Figure 8: Sending 'Get Version' Command to ESP8266 Module.</figcaption>
+</figure>
+
+<p>As shown in <a href="#fig8">Figure 8</a>, the SDK firmware version of our module 1.3.0 and the AT version is 0.40.0, which are quite old (see also the date, is 8 August 2015!). Check if there is any available firmware update by navigating to <a href="http://bbs.espressif.com/">http://bbs.espressif.com/</a> and look at the "SDK" section. We found that the current available firmware update is SDK version 1.5.3 and the current AT version is 1.1.0 (dated 16 April 2016).</p>
+
+<p>Download the firmware following the links provided in the SDK download page, then unzip the archive somewhere on your PC hard drive. Open the ESP8266Flasher tool, available as download in the archive attached to this tutorial. Now follow the instructions shown in <a href="#fig9">Figure 9</a>, <a href="#fig10">Figure 10</a> and <a href="#fig11">Figure 11</a> to configure the tool for firmware update. Notice that in <a href="#fig10">Figure 10</a>, we have selected 1MB because our ESP02 module has a 8MBit (1MB) flash IC, but you should do the appropriate selection for your module if the flash IC is different. However, a flash IC with a size smaller than 1MB <strong>will not work</strong>, since the current firmware version is to big to fit. Such a module cannot be upgraded to a firmware version greater than 1.1.0 (which is quite old and misses a lot of features, so go and break your piggy bank and buy an appropriate ESP8266 module!).</p>
+
+<p><strong>Note:</strong> the ESP8266 firmware update tool, as well as the current version of the ESP8266 firmware is part of the download archive we provide with this article. However, new firmware versions may be released at anytime, so better check the <a href="http://bbs.espressif.com/">http://bbs.espressif.com/</a> for being sure that you get the latest version.</p>
+
+<figure id="fig9"><img alt="Select Firmware Update Binaries" src="http://web-engineering.info/sites/default/files/wot_tutorials/networking/esp8266-FU-config.png" />
+<figcaption>Figure 9: Select Firmware Update Binaries.</figcaption>
+</figure>
+
+<figure id="fig10"><img alt="Select Flash Size and Baudrate for Firmware Update" src="http://web-engineering.info/sites/default/files/wot_tutorials/networking/esp8266-FU-advanced.png" />
+<figcaption>Figure 10: Select Flash Size and Baudrate for Firmware Update.</figcaption>
+</figure>
+
+<figure id="fig11"><img alt="Select COM Port for Firmware Update" src="http://web-engineering.info/sites/default/files/wot_tutorials/networking/esp8266-FU-operation.png" />
+<figcaption>Figure 11: Select COM Port for Firmware Update.</figcaption>
+</figure>
+
+<p>Last, start the firmware update by pushing the "Flash" button, shown in <a href="#fig11">Figure 11</a>. If all was correctly configure, you should see now the "AP MAC" and "STA MAC" fields (shown in <a href="#fig11">Figure 11</a>) filled in with values (as shown in <a href="#fig12">Figure 12</a>), and the blue bar starts to fill in, showing the progress (see <a href="#fig12">Figure 12</a>).</p>
+
+<figure id="fig12"><img alt="Firmware Update in Progress" src="http://web-engineering.info/sites/default/files/wot_tutorials/networking/esp8266-FU-updating.png" />
+<figcaption>Figure 12: Firmware Update in Progress.</figcaption>
+</figure>
+
+<p>The update may take about a minute or two, and at the end, the ESP8266Flasher UI should look similar with <a href="#fig13">Figure 13</a>.</p>
+
+<figure id="fig13"><img alt="Firmware Update Completed" src="http://web-engineering.info/sites/default/files/wot_tutorials/networking/esp8266-FU-updated.png" />
+<figcaption>Figure 13: Firmware Update Completed.</figcaption>
+</figure>
+
+<p>At this point, you'll need to power down the ESP8266 module (disconnect the power supply), and remove the connection between the GPIO0 pin and GND, so the module does not enter firmware upgrade mode when powered up. Missing this step results in a non communicative module, therefore not responding to commands and looking as a broken one, software wise.</p>
+
+<p>Start the Realterm, make the port configurations (discussed earlier in this section) and run the "AT+RST" command and then the "AT+GMR" command and check the results. If all went well, you should see results similar with the ones shown in <a href="#fig14">Figure 14</a> and <a href="#fig15">Figure 15</a>.</p>
+
+<figure id="fig14"><img alt="Sending Reset Command to ESP8266 Module" src="http://web-engineering.info/sites/default/files/wot_tutorials/networking/esp8266-AT+RST-after.png" />
+<figcaption>Figure 14: Sending Reset Command to ESP8266 Module.</figcaption>
+</figure>
+
+<figure id="fig15"><img alt="Sending 'Get Version' Command to ESP8266 Module" src="http://web-engineering.info/sites/default/files/wot_tutorials/networking/esp8266-AT+GMR-before.png" />
+<figcaption>Figure 15: Sending 'Get Version' Command to ESP8266 Module.</figcaption>
+</figure>
+
+<p><strong>Note:</strong> the "Display" tab of the Realterm UI provides useful settings for selecting how the data is displayed. Normally, you'll want to select "Ascii" or "Ansi" as the value of the "Display As" parameter. In addition to normal characters, from the ASCII table, the "Ascii" mode shows also the special chars, such as CR and LF, which are important when using Realterm to debug or control ESP8266 module.</p>
+
+<h2>Use Arduino and HTTP(S) to Access Online Services via an WiFi Network</h2>
+
+<h3>Hardware Configuration</h3>
+
+<h3>SoftwareConfiguration</h3>
+
+<h2>Some Points of Attention</h2>
+
+<p>It is important to use a good quality power supply, both for your Arduino board (if not powered via USB) and the ESP8266 module. A low quality power supply may have unknown effects, and may produce behaviors like unwanted resets of the devices. If your ESP8266 module seems to be unstable, i.e., often resets by itself, then it is very likely that you have an issue with the 3.3V rail provided to the module. You can try to add a 1000µF electrolytic capacitor in parallel with an 0.1µF ceramic capacitor to the 3.3V rail. If this does not improve the module behavior, then try to replace your power supply. If an oscilloscope is available, you can observe the 3.3V rail.</p>
+
+<p>When using the ESP8266 module with a device that runs the UART communication on 5V rail (e.g., Arduino UNO and most of the other Arduino boards), then you need to use a voltage LC (level converter) between the RX and TX lines of the ESP8266 modules and the TX and RX lines of the paired device. Also, remember, the RX and TX lines are twisted between the two devices implied in the UART communication.</p>
+
+<p>While the ESP8266 is a really nice and cheap module, it is not in its most stable version, thus you may observe strange behaviors sometimes. It may help to reset the software configuration to its default state, by using the "AT+RESTORE" command. After that, you should configure the module again, with respect to all parameters you've been set before the reset (e.g., WiFi connection, client or AP mode, etc). If your module still misbehaves, then a better power supply may help. Also, be sure that you didn't wrote a firmware with a version over 1.1.0 on a module that only has 4Mbit (or less) flash size!</p>
+
+<p>Sometimes, TCP or UDP connections made via this module are not stable or you may even get connection refused errors. In this case, you should try a few more times to be sure that it is really a problem, since in multiple cases this is just a temporarily problem and can be solved by retrying, resetting or power cycling the module.</p>
+
+<p>Periodically check the temperature of your ESP8266 module, simply by putting your finger on the CPU IC. If it feels hot when touched, then something may be wrong. Usually a hot CPU on the ESP8266 module means that the module receives more than the 3.3V required on the power line or on the RX and/or TX lines. Check the voltage, and make sure that this is not the case. If this is not the case, the high temperature may be due to high WiFi activity. While this is not bad, make sure that the module is on a place with environment temperature under 30°C to avoid overheating and damaging the CPU.</p>
+
+<p>When using the module in AP (access point) or STA+AP (station and access point) modes (that is, AT+CWMODE=2 or AT+CWMODE=3), make sure that you set a good password, otherwise you may have "spy eyes" on your network and may even result in security breach of your entire enterprise network! To check if you are in either AP or STA+AP mode, run the "AT+CWMODE?" command and check which value it returns (+CWMODE:1 means STA mode, +CWMODE:2 means AP mode and +CWMODE:3 means STA+AP mode).</p>
+
+<h2>Next Tutorial: Part 4 - Control the Environment by Using Actuators</h2>
+
+<p>In this tutorial we'll learn how to use Arduino to produce environment changes. Specifically, we'll use relays to turn ON/OF lights, miniature water pumps to ensure the correct soil moisture for our beloved room plants and a DIY PWM actuator to adjust the intensity of a dimmable LED strip, used to produce ambient light on a room.</p>
+
+<p>The release date of the 4th part is: before 24 May 2016.</p>
