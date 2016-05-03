@@ -16,7 +16,7 @@ const uint8_t DATA_SERVER_PORT = 80;
 // data to be sent to the server
 const char* DATA_SERVER_API_KEY = "your-thingspeak-write-api-key";
 char* DATA_SERVER_PATH = "/update";
-char DATA_TEMPLATE[] PROGMEM = "?api_key=%s&field1=%s&field2=%s";
+const char DATA_TEMPLATE[] PROGMEM = "?api_key=%s&field1=%s&field2=%s";
 
 boolean checkWiFi() {
   if( esp.at() == ESP8266::Error::NONE) return true; 
