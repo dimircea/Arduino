@@ -42,6 +42,11 @@ class ESP8266 {
       CH_10 = 10,
       CH_11 = 11
     };
+    enum class WiFiMode: uint8_t {
+      STA = 1,
+      AP = 2,
+      AP_STA = 3
+    };
     enum class Encription {
       OPEN = 0,
       WPA_PSK = 2,
@@ -59,6 +64,7 @@ class ESP8266 {
     Error ate0( uint16_t timeout = 500);
     Error ate1( uint16_t timeout = 500);
     Error atRst( uint16_t timeout = 1000);
+    Error atCwmode( WiFiMode mode = WiFiMode::STA, uint16_t timeout = 500);
     Error atCwsap( char* ssid, char* passwd, 
       Channel channel = Channel::CH_5, 
       Encription enc = Encription::WPA2_PSK, 
@@ -104,6 +110,7 @@ const char ESP8266_AT[] PROGMEM = "AT";
 const char ESP8266_ATE0[] PROGMEM = "ATE0";
 const char ESP8266_ATE1[] PROGMEM = "ATE1";
 const char ESP8266_AT_RST[] PROGMEM = "AT+RST";
+const char ESP8266_AT_CWMODE[] PROGMEM = "AT+CWMODE";
 const char ESP8266_AT_RST_READY[] PROGMEM = "ready";
 const char ESP8266_AT_CWSAP[] PROGMEM = "AT+CWSAP";
 const char ESP8266_AT_CWJAP[] PROGMEM = "AT+CWJAP";

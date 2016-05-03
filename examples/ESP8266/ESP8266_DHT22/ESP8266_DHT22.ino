@@ -10,13 +10,13 @@ const char* WIFI_SSID = "your-wifi-ssid";
 const char* WIFI_PASSWORD = "your-wifi-password";
 
 // data server address and port
-const char* DATA_SERVER_ADDRESS = "api.thingspeak.com"
+const char* DATA_SERVER_ADDRESS = "api.thingspeak.com";
 const uint8_t DATA_SERVER_PORT = 80;
 
 // data to be sent to the server
 const char* DATA_SERVER_API_KEY = "your-thingspeak-write-api-key";
 char* DATA_SERVER_PATH = "/update";
-const char DATA_TEMPLATE[] PROGMEM = "?api_key=%s&field1=%s&field2=%s";
+char DATA_TEMPLATE[] PROGMEM = "?api_key=%s&field1=%s&field2=%s";
 
 boolean checkWiFi() {
   if( esp.at() == ESP8266::Error::NONE) return true; 
@@ -27,6 +27,8 @@ void setup() {
   // Start serial communication, used to 
   // communicate with the ESP8266 WiFi module.
   Serial.begin(115200);
+  // set the WiFi mode for the ESP8266 module
+  esp.atCwmode(ESP8266::WiFiMode::STA);
   // connect to WiFi network...try again and again
   while (esp.atCwjap(WIFI_SSID, WIFI_PASSWORD) != ESP8266::Error::NONE);
 };

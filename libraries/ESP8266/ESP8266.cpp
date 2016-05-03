@@ -136,6 +136,30 @@ ESP8266::Error ESP8266::atRst( uint16_t timeout) {
   return this->checkTimeout( this->cmdData, timeout);
 };
 
+
+/************************************************************************/
+/* @method                                                              */
+/* Set the WiFi mode: send AT+CWMODE command                            */
+/* @param mode                                                          */
+/*          the WiFi mode (STA, AP or STA+AP), values of WiFiMode::xxx  */
+/*          Defaults to STA.
+/* @param timeout                                                       */
+/*          timeout in milliseconds for this command ( the time to wait */
+/*          for OK response before gave up)                             */
+/*          NOTE: default value is 500                                  */
+/* @return ESP8266::Error_NONE if all OK, ESP8266::Error::XXX otherwise */
+/************************************************************************/
+ESP8266::Error ESP8266::atCwmode( WiFiMode mode, uint16_t timeout) {
+  getPMData( ESP8266_AT_CWMODE, this->cmdData, this->cmdLen);
+  // send AT+CWMODE command
+  this->serial.print( this->cmdData);
+  this->serial.print( ESP8266_EQUAL);
+  this->serial.print( (uint8_t)mode);
+  this->serial.print( ESP8266_CMD_END);
+  getPMData( ESP8266_OK, this->cmdData, this->cmdLen);
+  return this->checkTimeout( this->cmdData, timeout);
+};
+
 /************************************************************************/
 /* @method                                                              */
 /* Access point settings: execute AT+CWSAP                              */
