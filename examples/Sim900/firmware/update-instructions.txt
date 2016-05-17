@@ -1,0 +1,13 @@
+1) Power up your SIM900A module to respond to AT commands in auto-baud mode (AT+IPR=0). It means you must wire powerlines, do power-on sequence with PWRKEY etc.
+2) Setup flashing tool — connect it to SIM900A, set default speed of 460800 baud, choose firmware to flash and press "start download" button to see “Power On/Reset Target” message.
+3) Short NRESET (pin 16 if not available directly on your board) to GND for a moment. Right after it reboots flashing tool will start pushing data.
+4) When flashing ends with “Download complete” power off SIM900A module. Note that reset will not work, disconnect power line and start power-on sequence once again.
+5) Test by adding a sim card to your module, then make a call to that number. If all is fine, you should see "RING" in the serial console. 
+   A visual test is to observe the onoard LED (not the power one) which flashes once every 2-3 seconds when SIM registered to network and once or twice per second when it did not.
+
+Use the firmware from the bin folder, or download other firmware versions from: http://dostmuhammad.com/sim900-firmware-update-tutorials-appnotes/
+
+AT Commands to enter pin and test version:
+1) AT+CPIN?  (if response is +CPIN: SIM PIN then go to step 2 otherwise go to step 3)
+2) AP+CPIN="your-pin-here"
+3) AT+CGMR (display your firmware version)

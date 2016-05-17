@@ -2,20 +2,20 @@
 #include <ESP8266.h>
 #define DHT_PIN 7
 
-Dht dht(DHT_PIN, Dht::TypeEL::DHT22);
+Dht dht(DHT_PIN, Dht::TypeEL::DHT11);
 ESP8266 esp(Serial);
 
 // WiFi authentication data
-const char* WIFI_SSID = "your-wifi-ssid";
-const char* WIFI_PASSWORD = "your-wifi-password";
+const char* WIFI_SSID = "wotap";
+const char* WIFI_PASSWORD = "g3ma4ode";
 
 // data server address and port
-const char* DATA_SERVER_ADDRESS = "api.thingspeak.com";
+const char* DATA_SERVER_ADDRESS = "141.43.15.13";
 const uint8_t DATA_SERVER_PORT = 80;
 
 // data to be sent to the server
-const char* DATA_SERVER_API_KEY = "your-thingspeak-write-api-key";
-char* DATA_SERVER_PATH = "/update";
+const char* DATA_SERVER_API_KEY = "3LTES6V0ERPMDZ12";
+char* DATA_SERVER_PATH = "/api.thingspeak.com/update";
 const char DATA_TEMPLATE[] PROGMEM = "?api_key=%s&field1=%s&field2=%s";
 
 boolean checkWiFi() {
@@ -34,7 +34,7 @@ void setup() {
 };
 
 void createDataFromTemplate( char *&data, float temperature, float humidity) {
-  char buffTemp[6] = {0}, buffHum[5] = {0}, tmpl[32] = {0};
+  char buffTemp[6] = {0}, buffHum[5] = {0}, tmpl[64] = {0};
   char *pTmpl = tmpl;
   uint8_t templateLen = -1;
   // read template from PROGMEM
@@ -47,7 +47,7 @@ void createDataFromTemplate( char *&data, float temperature, float humidity) {
 };
 
 void sendDataToServer(float temperature, float humidity) {
-  char data[64] = {0};
+  char data[96] = {0};
   char *pData = data;
   createDataFromTemplate(pData, temperature, humidity);
   esp.atCipstartTcp(DATA_SERVER_ADDRESS, 80);
