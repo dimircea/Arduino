@@ -7,10 +7,10 @@
 /************************************************************************/
 uint16_t getFreeMCUMemory() {
   uint16_t free_memory;
-  if ( (uint16_t)__brkval == 0)
-  return ( ( (uint16_t)&free_memory) - ( (uint16_t)&__bss_end));
+  if ((uint16_t)__brkval == 0)
+    return (((uint16_t)&free_memory) - ((uint16_t)&__bss_end));
   else
-  return ( ( (uint16_t)&free_memory) - ( (uint16_t)__brkval));
+    return (((uint16_t)&free_memory) - ((uint16_t)__brkval));
 };
 
 /************************************************************************/
@@ -27,11 +27,11 @@ uint16_t getFreeMCUMemory() {
 /*          as value the number of bytes found for pmData               */
 /*          NOTE: value is NOT (length + 1) because of the added '\0'   */
 /************************************************************************/
-void getPMData( const char pmData[], char *&resultData, uint8_t &length) {
+void getPMData(const char pmData[], char *&resultData, uint8_t &length) {
   char c = 0;
   const char *data = pmData;
   // load the data from PROGMEM and store it in resultData
   length = 0;
-  while ( 0 != ( c = pgm_read_byte( data++))) *(resultData + length++) = c;
+  while (0 != (c = pgm_read_byte(data++))) *(resultData + length++) = c;
   *(resultData + length) = '\0';
 };
