@@ -1,12 +1,9 @@
 #include <ESP8266.h>
 
 // WiFi authentication data
-const char* WIFI_SSID = "wotap";
-const char* WIFI_PASSWORD = "g3ma4ode";
-const char* SERVER_ADDRESS = "141.43.15.13";
-//const char* WIFI_SSID = "your-wifi-ssid";
-//const char* WIFI_PASSWORD = "<our-wifi-password";
-//const char* SERVER_ADDRESS = "your-server-ip";
+const char* WIFI_SSID = "your-wifi-ssid";
+const char* WIFI_PASSWORD = "<our-wifi-password";
+const char* SERVER_ADDRESS = "your-server-ip";
 
 
 char* SERVER_REGISTER_PATH = "/register/";
