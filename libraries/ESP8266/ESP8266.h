@@ -7,7 +7,6 @@
 
 class ESP8266 {
   public:
-    SoftwareSerial mySerial;
     enum class Error {
       NONE = 0,
       TIMEOUT = 1,
@@ -55,12 +54,11 @@ class ESP8266 {
       WPA2_PSK = 3,
       WPA_WPA2_PSK = 4
     };
-    ESP8266( HardwareSerial& ser): serial( ser),  mySerial(10, 11){
+    ESP8266( HardwareSerial& ser): serial( ser){
       // allocate space for the longest command (32 chars + '\0')
       this->cmdData = "                                 ";
       this->cmdLen = 0;
       this->cTime = 0;
-      mySerial.begin(9600);
     };
     void clearSerialBuffer();
     Error at(uint16_t timeout = 500);
@@ -81,7 +79,7 @@ class ESP8266 {
     Error atCipstartTcp(const char* remoteIp = "0", uint16_t remotePort = 0, 
       uint16_t timeout = 5000);
     Error atCipclose(LinkId linkId = LinkId::NONE, 
-      uint16_t timeout = 500);
+      uint16_t timeout = 1000);
     Error ipd(char *&data, uint16_t &dataLen, LinkId &linkId, 
       uint16_t waitTime = 0);
     inline Error ipd(char *&data, LinkId &linkId, uint16_t waitTime = 0) {
@@ -125,7 +123,9 @@ const char ESP8266_PGM_AT_RST_READY[] PROGMEM = "ready";
 const char ESP8266_PGM_AT_CWSAP[] PROGMEM = "AT+CWSAP";
 const char ESP8266_PGM_AT_CWJAP[] PROGMEM = "AT+CWJAP";
 const char ESP8266_PGM_AT_CIPSTART[] PROGMEM = "AT+CIPSTART";
+const char ESP8266_PGM_AT_CIPSTART_CONNECT_OK[] PROGMEM = "CONNECT\r\n\r\nOK\r\n";
 const char ESP8266_PGM_AT_CIPCLOSE[] PROGMEM = "AT+CIPCLOSE";
+const char ESP8266_PGM_AT_CIPCLOSE_CLOSED[] PROGMEM = "CLOSED";
 const char ESP8266_PGM_IPD[] PROGMEM = "+IPD";
 const char ESP8266_PGM_GOT_IP[] PROGMEM = "GOT IP";
 const char ESP8266_PGM_AT_CIPSEND[] PROGMEM = "AT+CIPSEND";
@@ -140,7 +140,7 @@ const char ESP8266_PGM_HTTP_POST[] PROGMEM = "POST";
 const char ESP8266_CR_LF[] = "\n";
 const char ESP8266_CMD_LF[] = "\n";
 const char ESP8266_CMD_END[] = "\r\n";
-const char ESP8266_OK[] = "OK";
+const char ESP8266_OK[] = "OK\r\n";
 const char ESP8266_UDP[] = "UDP";
 const char ESP8266_TCP[] = "TCP";
 const char ESP8266_ZERO = '0';

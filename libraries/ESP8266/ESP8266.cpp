@@ -263,7 +263,8 @@ ESP8266::Error ESP8266::atCipstartTcp(const char* remoteIp,
   this->serial.print(ESP8266_COMA);
   this->serial.print(remotePort);
   this->serial.print(ESP8266_CMD_END);
-  return this->checkTimeout(ESP8266_OK, timeout);
+  getPMData(ESP8266_PGM_AT_CIPSTART_CONNECT_OK, this->cmdData, this->cmdLen);
+  return this->checkTimeout(this->cmdData, timeout);
 };
 
 /************************************************************************/
@@ -277,11 +278,11 @@ ESP8266::Error ESP8266::atCipstartTcp(const char* remoteIp,
 /* @param timeout                                                       */
 /*          timeout in milliseconds for this command ( the time to wait */
 /*          for CLOSEDresponse before gave up)                          */
-/*          NOTE: default value is 500                                 */
+/*          NOTE: default value is 1000                                 */
 /* @return ESP8266::Error_NONE if all OK, ESP8266::Error::XXX otherwise */
 /************************************************************************/
 ESP8266::Error ESP8266::atCipclose(LinkId linkId, uint16_t timeout) {
-  getPMData( ESP8266_PGM_AT_CIPCLOSE, this->cmdData, this->cmdLen);
+  getPMData(ESP8266_PGM_AT_CIPCLOSE, this->cmdData, this->cmdLen);
   // send AT+CIPCLOSE command
   this->serial.print(this->cmdData);
   if (linkId <= LinkId::ALL) {
@@ -289,7 +290,8 @@ ESP8266::Error ESP8266::atCipclose(LinkId linkId, uint16_t timeout) {
     this->serial.print((int)linkId);
   }
   this->serial.print(ESP8266_CMD_END);
-  return this->checkTimeout(ESP8266_OK, timeout);
+  getPMData(ESP8266_PGM_AT_CIPCLOSE_CLOSED, this->cmdData, this->cmdLen);
+  return this->checkTimeout(this->cmdData, timeout);
 };
 
 /************************************************************************/
@@ -318,9 +320,8 @@ ESP8266::Error ESP8266::ipd(char *&data, uint16_t &dataLen,
   // ESP8266 command string is loaded from PROGMEM
   getPMData(ESP8266_PGM_IPD, this->cmdData, this->cmdLen);
   // wait for data ( the specified wite time value)
-  if (waitTime > 0) {
-    delay( waitTime);
-  }
+  waitTime++;
+  delay(waitTime);
   // check serial buffer for response - minimum 8 chars: "+IPD,x:y" 
   if (this->serial.available() > 7) {
     if (!this->serial.find( this->cmdData)) return Error::EMPTY_DATA;
@@ -491,12 +492,17 @@ ESP8266::Error ESP8266::atCipsendHttpPost(char *path, char *data,
   pData = path;
   while ((*(pData + pathLen++)) != 0);
   pathLen--;
-  
-  String postRequest =
-  "POST /data/team0 HTTP/1.0\r\nContent-Length: 14\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\ntemperature=25";
+  // add the number of chars used to represent the value of Content-length
   baseLen += String(dataLen).length();
-  
-  // ESP8266 command string is loaded from PROGMEM
+  /**
+   * a POST request example is shown below:
+   *
+   * POST /path HTTP/1.0\r\n
+   * Content-Length: 14\r\n
+   * Content-Type: application/x-www-form-urlencoded\r\n\r\n
+   * temperature=25
+   */
+  //ESP8266 command string is loaded from PROGMEM
   getPMData(ESP8266_PGM_AT_CIPSEND, this->cmdData, this->cmdLen);
   // send AT+CIPSEND command
   this->serial.print(this->cmdData);
